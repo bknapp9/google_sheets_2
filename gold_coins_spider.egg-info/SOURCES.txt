@@ -1,0 +1,14 @@
+setup.py
+gold_coins_spider/__init__.py
+gold_coins_spider/items.py
+gold_coins_spider/middlewares.py
+gold_coins_spider/pipelines.py
+gold_coins_spider/settings.py
+gold_coins_spider.egg-info/PKG-INFO
+gold_coins_spider.egg-info/SOURCES.txt
+gold_coins_spider.egg-info/dependency_links.txt
+gold_coins_spider.egg-info/entry_points.txt
+gold_coins_spider.egg-info/top_level.txt
+gold_coins_spider/resources/token.pickle
+gold_coins_spider/spiders/__init__.py
+gold_coins_spider/spiders/aurica.py
