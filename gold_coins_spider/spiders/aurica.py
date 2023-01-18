@@ -1,9 +1,9 @@
 from scrapy import Spider
-from time import time, ctime, sleep
+from time import sleep
 from scrapy.crawler import CrawlerProcess
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from parsel import Selector
+from datetime import datetime
 
 class aurica(Spider):
     name = 'aurica'
@@ -36,7 +36,7 @@ class aurica(Spider):
     prices_de = []
 
     def parse(self, response):
-        t = time()
+        time = datetime.now(pytz.timezone('Chile/Continental')).strftime("%Y:%m:%d %H:%M:%S")
         url = response.url
         # aurica
         if "aurica.cl" in response.url:
@@ -50,12 +50,12 @@ class aurica(Spider):
                     aurica.prices_au.sort(reverse=True)
                 yield {"url": url,
                        "coin_name": coin_name,
-                       "time": ctime(t),
+                       "time": time,
                        "coin_price": coin_price}
             else:
                 yield {"url": url,
                        "coin_name": coin_name,
-                       "time": ctime(t),
+                       "time": time,
                        "coin_price": "Sin stock"}
 
         # compreoro
@@ -73,12 +73,12 @@ class aurica(Spider):
                     aurica.prices_co.sort(reverse=True)
                 yield {"url": url,
                        "coin_name": coin_name,
-                       "time": ctime(t),
+                       "time": time,
                        "coin_price": coin_price}
             else:
                 yield {"url": url,
                        "coin_name": coin_name,
-                       "time": ctime(t),
+                       "time": time,
                        "coin_price": "Sin stock"}
         # Gainesville
         elif "gainesvillecoins.com" in response.url:
@@ -88,12 +88,12 @@ class aurica(Spider):
                 coin_price = coin_price.replace("$", "")
                 yield {"url": url,
                        "coin_name": coin_name,
-                       "time": ctime(t),
+                       "time": time,
                        "coin_price": coin_price}
             else:
                 yield {"url": url,
                        "coin_name": coin_name,
-                       "time": ctime(t),
+                       "time": time,
                        "coin_price": "Sin stock"}
 
         # hardassetsalliance
@@ -104,14 +104,14 @@ class aurica(Spider):
                 yield {
                     "url": url,
                     "coin_name": coin_name,
-                    "time": ctime(t),
+                    "time": time,
                     "coin_price": coin_price
                 }
             else:
                 yield {
                     "url": url,
                     "coin_name": coin_name,
-                    "time": ctime(t),
+                    "time": time,
                     "coin_price": "Sin stock"
             }
         elif "orionmetalexchange.com" in response.url:
@@ -121,14 +121,14 @@ class aurica(Spider):
                 yield {
                     "url": url,
                     "coin_name": coin_name,
-                    "time": ctime(t),
+                    "time": time,
                     "coin_price": coin_price
                 }
             else:
                 yield {
                     "url": url,
                     "coin_name": coin_name,
-                    "time": ctime(t),
+                    "time": time,
                     "coin_price": "Sin stock"
                 }
 
@@ -158,14 +158,14 @@ class aurica(Spider):
                 yield {
                     "url": url,
                     "coin_name": coin_name,
-                    "time": ctime(t),
+                    "time": time,
                     "coin_price": coin_price
                 }
             else:
                 yield {
                     "url": url,
                     "coin_name": coin_name,
-                    "time": ctime(t),
+                    "time": time,
                     "coin_price": "Sin stock"
                 }
 """
