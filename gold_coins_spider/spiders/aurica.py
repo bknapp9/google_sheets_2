@@ -15,28 +15,21 @@ class aurica(Spider):
                   'https://aurica.cl/tienda/american-eagle-1-2-oz/',
                   'https://aurica.cl/tienda/moneda-de-oro-maple-leaf-canada-1-4-oz/',
                   'https://aurica.cl/tienda/gold-maple-leaf-1-10oz/',
+                  'https://aurica.cl/tienda/moneda-de-oro-american-eagle-1-oz/',
                   'https://compreoro.com/producto/moneda-canadian-maple-leaf-gold-1-oz/',
                   'https://compreoro.com/producto/moneda-american-eagle-type-2-gold-1-oz/',
                   'https://compreoro.com/producto/moneda-canadian-maple-leaf-gold-1-oz-cev/',
                   'https://compreoro.com/producto/moneda-american-eagle-type-2-gold-1-oz-cev/',
-                  'https://www.gainesvillecoins.com/products/158985/1-oz-american-gold-eagle-coins',
-                  'https://www.gainesvillecoins.com/products/158550/1-2-oz-american-gold-eagle-coins',
-                  'https://www.gainesvillecoins.com/products/180330/2021-1-4-oz-gold-american-eagle-brilliant-uncirculated',
-                  'https://www.gainesvillecoins.com/products/180331/2021-1-10-oz-gold-american-eagle-brilliant-uncirculated',
-                  'https://hardassetsalliance.com/gold-coins/american-gold-eagles-1-oz/',
-                  'https://hardassetsalliance.com/gold-coins/american-eagle-50-oz/',
-                  'https://www.boldpreciousmetals.com/product/3260/2022-american-gold-eagle-1-oz-bu?fromPage=AdvSrch-PrdLst&fromUrl=%5Bobject%20Object%5D',
-                  'https://www.boldpreciousmetals.com/product/3264/2022-american-gold-eagle-1-2-oz-bu?fromPage=AdvSrch-PrdLst&fromUrl=%5Bobject%20Object%5D',
-                  'https://www.boldpreciousmetals.com/product/3263/2022-american-gold-eagle-1-4-oz-bu?fromPage=AdvSrch-PrdLst&fromUrl=%5Bobject%20Object%5D',
-                  'https://www.boldpreciousmetals.com/product/3262/2022-american-gold-eagle-1-10-oz-bu?fromPage=AdvSrch-PrdLst&fromUrl=%5Bobject%20Object%5D',
+                  'https://online.kitco.com/buy/3110/1-oz-Gold-Canadian-Maple-Leaf-Coin-9999-3110',
+                  'https://online.kitco.com/buy/3100/1-2-oz-Gold-Canadian-Maple-Leaf-Coin-9999-3100',
+                  'https://online.kitco.com/buy/3101/1-4-oz-Gold-Canadian-Maple-Leaf-Coin-9999-3101',
+                  'https://online.kitco.com/buy/3102Y2023/2023-1-10-oz-Gold-Canadian-Maple-Leaf-Coin-9999-BU-3102Y2023',
+                  'https://online.kitco.com/buy/3000/1-oz-Gold-American-Eagle-Coin-9167-3000',
+                  'https://online.kitco.com/buy/3001/1-2-oz-Gold-American-Eagle-Coin-9167-3001',
+                  'https://online.kitco.com/buy/3001/1-2-oz-Gold-American-Eagle-Coin-9167-3001',
                   'https://orionmetalexchange.com/product/gold-american-eagle-1-4-oz/',
                   'https://orionmetalexchange.com/product/gold-american-eagle-1-10-oz/',
                   ]
-
-    prices_au = []
-    prices_co = []
-    prices_de = []
-
     def parse(self, response):
         time = datetime.now(pytz.timezone('Chile/Continental')).strftime("%Y:%m:%d %H:%M:%S")
         url = response.url
@@ -45,11 +38,6 @@ class aurica(Spider):
             coin_name = response.css("h1::text").get()
             coin_price = response.xpath("//*[@class='price']/span/bdi/text()").get()
             if coin_price:
-                n = coin_price.replace(".", "")
-                aurica.prices_au.append(n)
-                if len(aurica.prices_au) == 5:
-                    aurica.prices_au = list(map(int, aurica.prices_au))
-                    aurica.prices_au.sort(reverse=True)
                 yield {"url": url,
                        "coin_name": coin_name,
                        "time": time,
@@ -68,11 +56,6 @@ class aurica(Spider):
             else:
                 coin_price = response.xpath("//*[@class='woocommerce-Price-amount amount']/bdi/text()")[1].extract()
             if coin_price:
-                n = coin_price.replace(".", "")
-                aurica.prices_co.append(n)
-                if len(aurica.prices_co) >= 3:
-                    aurica.prices_co = list(map(int, aurica.prices_co))
-                    aurica.prices_co.sort(reverse=True)
                 yield {"url": url,
                        "coin_name": coin_name,
                        "time": time,
@@ -82,26 +65,14 @@ class aurica(Spider):
                        "coin_name": coin_name,
                        "time": time,
                        "coin_price": "Sin stock"}
-        # Gainesville
-        elif "gainesvillecoins.com" in response.url:
-            coin_name = response.xpath("//h1/text()").extract_first()
-            coin_price = response.xpath("//td[2]/text()").extract_first()
-            if coin_price:
+        # kitco
+        elif "online.kitco.com" in response.url:
+            coin_name = response.xpath("//h1/span/text()").extract_first()
+            table = response.xpath("//table[contains(@class, 'bulk_discount_list')]")[0]
+            trs = table.xpath(".//tr")[1:]
+            for tr in trs:
+                coin_price = tr.xpath("//td/text()")[1].extract().strip()
                 coin_price = coin_price.replace("$", "")
-                yield {"url": url,
-                       "coin_name": coin_name,
-                       "time": time,
-                       "coin_price": coin_price}
-            else:
-                yield {"url": url,
-                       "coin_name": coin_name,
-                       "time": time,
-                       "coin_price": "Sin stock"}
-
-        # hardassetsalliance
-        elif "hardassetsalliance.com" in response.url:
-            coin_name = response.xpath("//h1/text()").extract_first().strip()
-            coin_price = response.xpath("//span[@itemprop='price']/text()").extract_first().replace("\n", "").strip()
             if coin_price:
                 yield {
                     "url": url,
