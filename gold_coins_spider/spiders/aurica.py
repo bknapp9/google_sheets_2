@@ -1,8 +1,5 @@
 from scrapy import Spider
 from time import sleep
-from scrapy.crawler import CrawlerProcess
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 import pytz
 from datetime import datetime
 
@@ -25,11 +22,11 @@ class aurica(Spider):
                   'https://online.kitco.com/buy/3101/1-4-oz-Gold-Canadian-Maple-Leaf-Coin-9999-3101',
                   'https://online.kitco.com/buy/3102Y2023/2023-1-10-oz-Gold-Canadian-Maple-Leaf-Coin-9999-BU-3102Y2023',
                   'https://online.kitco.com/buy/3000/1-oz-Gold-American-Eagle-Coin-9167-3000',
-                  'https://online.kitco.com/buy/3001/1-2-oz-Gold-American-Eagle-Coin-9167-3001',
-                  'https://online.kitco.com/buy/3001/1-2-oz-Gold-American-Eagle-Coin-9167-3001',
+                  'https://online.kitco.com/buy/3001/1-2-oz-Gold-American-Eagle-Coin-9167-3001'
                   'https://orionmetalexchange.com/product/gold-american-eagle-1-4-oz/',
                   'https://orionmetalexchange.com/product/gold-american-eagle-1-10-oz/',
                   ]
+
     def parse(self, response):
         time = datetime.now(pytz.timezone('Chile/Continental')).strftime("%Y:%m:%d %H:%M:%S")
         url = response.url
@@ -104,45 +101,3 @@ class aurica(Spider):
                     "time": time,
                     "coin_price": "Sin stock"
                 }
-
-        # boldpreciousmetals
-        else:
-            options = webdriver.ChromeOptions()
-            options.add_argument("headless")
-            driver = webdriver.Chrome(options=options)
-            if "1-oz" in response.url:
-                driver.get("https://www.boldpreciousmetals.com/product/3260/2022-american-gold-eagle-1-oz-bu?fromPage=AdvSrch-PrdLst&fromUrl=%5Bobject%20Object%5D")
-                sleep(2)
-            elif "1-2-oz" in response.url:
-                driver.get("https://www.boldpreciousmetals.com/product/3264/2022-american-gold-eagle-1-2-oz-bu?fromPage=AdvSrch-PrdLst&fromUrl=%5Bobject%20Object%5D")
-                sleep(2)
-            elif "1-4-oz" in response.url:
-                driver.get("https://www.boldpreciousmetals.com/product/3263/2022-american-gold-eagle-1-4-oz-bu?fromPage=AdvSrch-PrdLst&fromUrl=%5Bobject%20Object%5D")
-                sleep(2)
-            elif "1-10-oz" in response.url:
-                driver.get("https://www.boldpreciousmetals.com/product/3262/2022-american-gold-eagle-1-10-oz-bu?fromPage=AdvSrch-PrdLst&fromUrl=%5Bobject%20Object%5D")
-                sleep(2)
-
-            coin_name = driver.find_element(By.XPATH, "//h1").text
-            coin_price = driver.find_element(By.XPATH, "//span[@class='woocommerce-Price-amount amount']").text
-
-            if coin_price:
-                coin_price = coin_price.replace("$", "")
-                yield {
-                    "url": url,
-                    "coin_name": coin_name,
-                    "time": time,
-                    "coin_price": coin_price
-                }
-            else:
-                yield {
-                    "url": url,
-                    "coin_name": coin_name,
-                    "time": time,
-                    "coin_price": "Sin stock"
-                }
-"""
-process = CrawlerProcess()
-process.crawl(aurica)
-process.start()
-"""
