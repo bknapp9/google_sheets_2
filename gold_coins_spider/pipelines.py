@@ -1,21 +1,26 @@
 import pkgutil
 import pickle
 from googleapiclient.discovery import build
-
+import os
+import subprocess
 
 class GoogleSheetsPipeline:
-
     def __init__(self, sheet_id, range) -> None:
-        # save sheet_id and range for later use in process_item 
-        self.sheet_id = sheet_id
-        self.range = range
-        # load token from pickle file which you hopefully saved to the resources folder
-        token_file = pkgutil.get_data("gold_coins_spider", "resources/token.pickle")
-        token = pickle.loads(token_file)
-        # build connection to google sheets api
-        service = build('sheets', 'v4', credentials=token)
-        self.sheet = service.spreadsheets()
-
+        try:
+            # save sheet_id and range for later use in process_item
+            self.sheet_id = sheet_id
+            self.range = range
+            # load token from pickle file which you hopefully saved to the resources folder
+            token_file = pkgutil.get_data("gold_coins_spider", "resources/token.pickle")
+            token = pickle.loads(token_file)
+            # build connection to google sheets api
+            service = build('sheets', 'v4', credentials=token)
+            self.sheet = service.spreadsheets()
+        except:
+            os.remove("C://Users//benja//Escritorio//scrapsy//gold_coins_spider//gold_coins_spider//resources")
+            script_path = ("C://Users//benja//Escritorio//scrapsy//gold_coins_spider//gold_coins_spider//resources//get_token.py")
+            process = subprocess.Popen(["python", script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, error = process.communicate()
     @classmethod
     def from_crawler(cls, crawler) -> None:
         return cls(
